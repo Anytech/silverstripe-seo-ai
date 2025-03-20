@@ -161,20 +161,9 @@ class SeoAICMSPageEditControllerExtension extends Extension
            return "cURL Error: " . $error_msg;
        }
    
-       curl_close($ch);
-   
        $data = json_decode($response, true);
-   
-       // Debugging (optional)
-       if (isset($data['error'])) {
-           die("OpenAI API Error: " . print_r($data, true));
-       }
-   
-       if (isset($data["choices"][0]["message"]["content"])) {
-           return trim($data["choices"][0]["message"]["content"]);
-       }
-   
-       return "Error: Invalid API response.";
+
+       return $data["choices"][0]["message"]["content"];
    }
 
     /**

@@ -103,64 +103,63 @@ class SeoAICMSPageEditControllerExtension extends Extension
         return $prompt;
     }
 
-    /**
-     * Call an LLM API with generated prompt
-     *
-     * @param String
-     *
-     * @return String
-     */
-    public function promptAPICall($prompt)
-    {
-        $key = $this->openaiKey;
-        $url = 'https://api.openai.com/v1/chat/completions';
-        $data = [
-            "model" => $this->model,
-            "temperature" => $this->temperature,
-            "messages" => [
-                [
-                    "role" => "user",
-                    "content" => $prompt
-                ]
-            ],
-            "response_format" => [
-                "type" => "json_schema",
-                "json_schema" => [
-                    "name" => "metadata",
-                    "schema" => [
-                        "type" => "object",
-                        "properties" => [
-                            "metaTitle" => ["type" => "string"],
-                            "metaDescription" => ["type" => "string"]
-                        ],
-                        "required" => ["metaTitle", "metaDescription"],
-                        "additionalProperties" => false
-                    ],
-                    "strict" => true
-                ]
-            ]
-        ];
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "Content-Type: application/json",
-            "Authorization: Bearer " . $key,
-            "Content-length: " . strlen(json_encode($data))
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-        $response = curl_exec($ch);
-
-        curl_close($ch);
-
-        $data = json_decode($response, true);
-
-        return $data["choices"][0]["message"]["content"];
-    }
+        /* Call an LLM API with generated prompt
+    *
+    * @param String $prompt
+    *
+    * @return String
+    */
+   public function promptAPICall($prompt)
+   {
+       $key = $this->openaiKey;
+       $url = 'https://api.openai.com/v1/chat/completions';
+   
+       $data = [
+           "model" => $this->model,
+           "temperature" => $this->temperature,
+           "messages" => [
+               [
+                   "role" => "user",
+                   "content" => $prompt
+               ]
+           ]
+       ];
+   
+       $ch = curl_init();
+   
+       curl_setopt($ch, CURLOPT_URL, $url);
+       curl_setopt($ch, CURLOPT_POST, true);
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($ch, CURLOPT_HTTPHEADER, [
+           "Content-Type: application/json",
+           "Authorization: Bearer " . $key
+       ]);
+       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+   
+       $response = curl_exec($ch);
+   
+       // Handle potential cURL errors
+       if (curl_errno($ch)) {
+           $error_msg = curl_error($ch);
+           curl_close($ch);
+           return "cURL Error: " . $error_msg;
+       }
+   
+       curl_close($ch);
+   
+       $data = json_decode($response, true);
+   
+       // Debugging (optional)
+       if (isset($data['error'])) {
+           die("OpenAI API Error: " . print_r($data, true));
+       }
+   
+       if (isset($data["choices"][0]["message"]["content"])) {
+           return trim($data["choices"][0]["message"]["content"]);
+       }
+   
+       return "Error: Invalid API response.";
+   }
 
     /**
      * Populate the page's meta tags with AI generated content

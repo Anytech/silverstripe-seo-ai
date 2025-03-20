@@ -10,7 +10,7 @@
     "require": {
         "silverstripe/framework": "^5.0",
         "silverstripe/admin": "^2.0",
-        "anytech/silverstripe-seo": "dev-master",
+        "anytech/silverstripe-seo": "master",
         "voku/simple_html_dom": "^4.8",
         "lekoala/silverstripe-cms-actions": "^1.7"
     },

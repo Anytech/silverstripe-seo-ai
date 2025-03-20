@@ -163,6 +163,10 @@ class SeoAICMSPageEditControllerExtension extends Extension
    
        $data = json_decode($response, true);
 
+       if (isset($data['error'])) {
+        die("OpenAI API Error: " . print_r($data, true));
+    	}
+
        return $data["choices"][0]["message"]["content"];
    }
 

@@ -174,7 +174,7 @@ class SeoAICMSPageEditControllerExtension extends Extension
      */
     public function populateMetaTagsFromAPI($response)
     {
-        $metaTags = !empty($json) ? json_decode($json, true) : [];
+        $metaTags = !empty($response) ? json_decode($response, true) : [];
 
         if ($metaTags) {
 

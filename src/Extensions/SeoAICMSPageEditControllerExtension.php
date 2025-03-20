@@ -115,15 +115,31 @@ class SeoAICMSPageEditControllerExtension extends Extension
        $url = 'https://api.openai.com/v1/chat/completions';
    
        $data = [
-           "model" => $this->model,
-           "temperature" => $this->temperature,
-           "messages" => [
-               [
-                   "role" => "user",
-                   "content" => $prompt
-               ]
-           ]
-       ];
+            "model" => $this->model,
+            "temperature" => $this->temperature,
+            "messages" => [
+                [
+                    "role" => "user",
+                    "content" => $prompt
+                ]
+            ],
+            "response_format" => [
+                "type" => "json_schema",
+                "json_schema" => [
+                    "name" => "metadata",
+                    "schema" => [
+                        "type" => "object",
+                        "properties" => [
+                            "metaTitle" => ["type" => "string"],
+                            "metaDescription" => ["type" => "string"]
+                        ],
+                        "required" => ["metaTitle", "metaDescription"],
+                        "additionalProperties" => false
+                    ],
+                    "strict" => true
+                ]
+            ]
+        ];
    
        $ch = curl_init();
    
